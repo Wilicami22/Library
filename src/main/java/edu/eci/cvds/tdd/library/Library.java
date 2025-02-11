@@ -53,8 +53,35 @@ public class Library {
      * @return The new created loan.
      */
     public Loan loanABook(String userId, String isbn) {
-        //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
-        return null;
+        Loan currentLoan = new Loan();
+        Book bookLoan = null;
+        Boolean alreadyLoaned = false;
+        for (Book book : books.keySet()) {
+            if (book.getIsbn().equals(isbn) && books.get(book)>0) {
+                bookLoan = book;
+            }
+        }
+        User userLoan = null;
+        for (User user : users) {
+            if (user.getId().equals(userId)) {
+                userLoan = user;
+            }
+        }
+        for (Loan loan : loans) {
+            if (loan.getUser().equals(userLoan) && loan.getBook().equals(bookLoan)) {
+                alreadyLoaned = true;
+            }
+        }
+        if (bookLoan == null || userLoan == null || alreadyLoaned) {
+            return currentLoan;
+        }
+
+        currentLoan.setUser(userLoan);
+        currentLoan.setBook(bookLoan);
+        loans.add(currentLoan);
+        Integer currentBookValue = books.get(bookLoan);
+        books.put(bookLoan, currentBookValue - 1);
+        return currentLoan;
     }
 
     /**
@@ -75,4 +102,7 @@ public class Library {
         return users.add(user);
     }
 
+    public List<Loan> getLoans() {
+        return loans;
+    }
 }
