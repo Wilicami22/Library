@@ -3,10 +3,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import edu.eci.cvds.tdd.library.book.Book;
 import edu.eci.cvds.tdd.library.loan.Loan;
+import edu.eci.cvds.tdd.library.loan.LoanStatus;
 import edu.eci.cvds.tdd.library.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,11 +35,6 @@ public class LibraryTest {
         Map<Book, Integer> books = library.getBooks();
         assertTrue(books.containsKey(book), "El mapa debería contener el nuevo libro.");
         assertEquals(1, books.get(book), "La cantidad de libros debería ser 1.");
-    void shouldCreateLoanWithUserIdAndBookIsbn() {
-        library.addBook(book1);
-        library.addUser(user1);
-        library.loanABook("001", "101");
-        assertEquals(1, library.getLoans().size());
     }
 
     @Test
@@ -48,11 +45,6 @@ public class LibraryTest {
 
         Map<Book, Integer> books = library.getBooks();
         assertEquals(2, books.get(book), "La cantidad de libros debería haberse incrementado a 2.");
-    void shouldValidateThereIsUserAndBook(){
-        library.addBook(book1);
-        library.addUser(user1);
-        library.loanABook("695", "654");
-        assertEquals(0, library.getLoans().size());
     }
 
     @Test
@@ -64,31 +56,72 @@ public class LibraryTest {
     public void testAddMultipleDifferentBooks() {
         Book book1 = new Book("12345", "Effective Java", "Joshua Bloch");
         Book book2 = new Book("67890", "Clean Code", "Robert C. Martin");
-
-    void shouldValidateAvailabilityOfBooks(){
         library.addBook(book1);
         library.addBook(book2);
-
         Map<Book, Integer> books = library.getBooks();
         assertEquals(1, books.get(book1), "El mapa debería contener el primer libro con cantidad 1.");
         assertEquals(1, books.get(book2), "El mapa debería contener el segundo libro con cantidad 1.");
-        library.addUser(user1);
-        library.addUser(user2);
-        library.loanABook("001", "123");
-        library.loanABook("002", "123");
-        assertEquals(1, library.getLoans().size());
     }
 
     @Test
     public void testNoAddTwoBooksWithSameISBNAndDifferentName() {
         Book book1 = new Book("12345", "Effective Java", "Joshua Bloch");
         Book book2 = new Book("Pedrito", "Rodirigo", "Joshua Bloch");
+        library.addBook(book1);
+        library.addBook(book2);
+    }
+
+    @Test
+    void shouldCreateLoanWithUserIdAndBookIsbn() {
+        library.addBook(book1);
+        library.addUser(user1);
+        library.loanABook("001", "101");
+        assertEquals(1, library.getLoans().size());
+    }
+
+    @Test
+    void shouldValidateThereIsUserAndBook(){
+        library.addBook(book1);
+        library.addUser(user1);
+        library.loanABook("695", "654");
+        assertEquals(0, library.getLoans().size());
+    }
+
+    @Test
+    void shouldValidateAvailabilityOfBooks(){
+        library.addBook(book1);
+        library.addUser(user1);
+        library.addUser(user2);
+        library.loanABook("001", "101");
+        library.loanABook("002", "101");
+        assertEquals(1, library.getLoans().size());
+    }
+
+    @Test
     void shouldValidateUserWithTheSameBook(){
         library.addBook(book1);
         library.addBook(book1);
         library.addUser(user1);
-        library.loanABook("001", "123");
-        library.loanABook("001", "123");
+        library.loanABook("001", "101");
+        library.loanABook("001", "101");
         assertEquals(1, library.getLoans().size());
     }
+
+    @Test
+    void shouldValidateStatusActive(){
+        library.addBook(book1);
+        library.addUser(user1);
+        Loan loan1 = library.loanABook("001", "101");
+        assertEquals(LoanStatus.ACTIVE, loan1.getStatus());
+    }
+
+    @Test
+    void shouldValidateCurrentDate(){
+        library.addBook(book1);
+        library.addUser(user1);
+        Loan loan1 = library.loanABook("001", "101");
+        assertEquals(LocalDateTime.now(), loan1.getLoanDate());
+    }
+
+
 }

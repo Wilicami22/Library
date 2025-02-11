@@ -2,8 +2,10 @@ package edu.eci.cvds.tdd.library;
 
 import edu.eci.cvds.tdd.library.book.Book;
 import edu.eci.cvds.tdd.library.loan.Loan;
+import edu.eci.cvds.tdd.library.loan.LoanStatus;
 import edu.eci.cvds.tdd.library.user.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,6 +104,8 @@ public class Library {
         loans.add(currentLoan);
         Integer currentBookValue = books.get(bookLoan);
         books.put(bookLoan, currentBookValue - 1);
+        currentLoan.setStatus(LoanStatus.ACTIVE);
+        currentLoan.setLoanDate(LocalDateTime.now());
         return currentLoan;
     }
 
@@ -117,6 +121,10 @@ public class Library {
     public Loan returnLoan(Loan loan) {
         //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
         return null;
+    }
+
+    public List<User> getUsers(){
+        return users;
     }
 
     public boolean addUser(User user) {
