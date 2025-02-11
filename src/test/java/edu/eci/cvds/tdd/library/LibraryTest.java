@@ -123,5 +123,32 @@ public class LibraryTest {
         assertEquals(LocalDateTime.now(), loan1.getLoanDate());
     }
 
+    @Test
+    void shouldIncreasedByBooksAmount(){
+        library.addBook(book1);
+        library.addUser(user1);
+        Loan loan1 = library.loanABook("001", "101");
+        library.returnLoan(loan1);
+        assertEquals(1, library.getBooks().get(loan1.getBook()));
+    }
+
+    @Test
+    void shouldChangeStatusToReturnedBook(){
+        library.addBook(book1);
+        library.addUser(user1);
+        Loan loan1 = library.loanABook("001", "101");
+        library.returnLoan(loan1);
+        assertEquals(loan1.getStatus(), LoanStatus.RETURNED);
+    }
+
+    @Test
+    void shouldSetReturnDate(){
+        library.addBook(book1);
+        library.addUser(user1);
+        Loan loan1 = library.loanABook("001", "101");
+        library.returnLoan(loan1);
+        assertEquals(LocalDateTime.now(), loan1.getReturnDate());
+    }
+
 
 }
