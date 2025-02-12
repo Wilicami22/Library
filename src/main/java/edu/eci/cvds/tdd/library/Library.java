@@ -2,8 +2,10 @@ package edu.eci.cvds.tdd.library;
 
 import edu.eci.cvds.tdd.library.book.Book;
 import edu.eci.cvds.tdd.library.loan.Loan;
+import edu.eci.cvds.tdd.library.loan.LoanStatus;
 import edu.eci.cvds.tdd.library.user.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +54,6 @@ public class Library {
 
         return true;
     }
-
     /**
      * Return the books in the library
      */
@@ -74,8 +75,37 @@ public class Library {
      * @return The new created loan.
      */
     public Loan loanABook(String userId, String isbn) {
-        //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
-        return null;
+        Loan currentLoan = new Loan();
+        Book bookLoan = null;
+        Boolean alreadyLoaned = false;
+        for (Book book : books.keySet()) {
+            if (book.getIsbn().equals(isbn) && books.get(book)>0) {
+                bookLoan = book;
+            }
+        }
+        User userLoan = null;
+        for (User user : users) {
+            if (user.getId().equals(userId)) {
+                userLoan = user;
+            }
+        }
+        for (Loan loan : loans) {
+            if (loan.getUser().equals(userLoan) && loan.getBook().equals(bookLoan)) {
+                alreadyLoaned = true;
+            }
+        }
+        if (bookLoan == null || userLoan == null || alreadyLoaned) {
+            return currentLoan;
+        }
+
+        currentLoan.setUser(userLoan);
+        currentLoan.setBook(bookLoan);
+        loans.add(currentLoan);
+        Integer currentBookValue = books.get(bookLoan);
+        books.put(bookLoan, currentBookValue - 1);
+        currentLoan.setStatus(LoanStatus.ACTIVE);
+        currentLoan.setLoanDate(LocalDateTime.now());
+        return currentLoan;
     }
 
     /**
@@ -88,12 +118,32 @@ public class Library {
      * @return the loan with the RETURNED status.
      */
     public Loan returnLoan(Loan loan) {
-        //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
-        return null;
+        boolean loanExist = false;
+        for (Loan loan1 : loans) {
+            if (loan == loan1) {
+                loanExist = true;
+            }
+        }
+        if (!loanExist) {
+            return loan;
+        }
+
+        Integer currentBookValue = books.get(loan.getBook());
+        books.put(loan.getBook(), currentBookValue + 1);
+        loan.setStatus(LoanStatus.RETURNED);
+        loan.setReturnDate(LocalDateTime.now());
+        return loan;
+    }
+
+    public List<User> getUsers(){
+        return users;
     }
 
     public boolean addUser(User user) {
         return users.add(user);
     }
 
+    public List<Loan> getLoans() {
+        return loans;
+    }
 }
